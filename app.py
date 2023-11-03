@@ -19,26 +19,20 @@ model = tf.keras.Sequential([
 
 
 def extract_features(img_path, model):
-    image_dir = 'image'
-    for filename in os.listdir(image_dir):
-        filepath = os.path.join(image_dir, filename)
-        img = load_img(filepath, target_size=(224,224))
-        img = img_to_array(img)
-        img = np.expand_dims(img, axis=0)
-        img = tf.keras.applications.resnet50.preprocess_input(img)
-        pred = model.predict(img).flatten()
-        normalised_result = pred/norm(pred)
-    return normalised_result
+    filepath = os.path.join(img_path)
+    img = load_img(filepath, target_size=(224, 224, 3))
+    img = img_to_array(img)
+    img = np.expand_dims(img, axis=0)
+    img = tf.keras.applications.resnet50.preprocess_input(img)
+    pred = model.predict(img).flatten().reshape(-1)
+    return pred / np.linalg.norm(pred)
 
-filenames = []
+paths_list = ['data/myntradataset/images/{}.jpg'.format(id) for file in os.listdir('data/myntradataset/images')]
 
-for file in os.listdir('images'):
-    filenames.append(os.path.join('images', file))
-    
 feature_list = []
 
-for file in tqdm(filenames):
+for file in tqdm(paths_list):
     feature_list.append(extract_features(file, model))
  
 pickle.dump(feature_list, open('embeddings.pkl', 'wb'))
-pickle.dump(filenames, open('filenames.pkl', 'wb'))
+pickle.dump(paths_list, open('filenames.pkl', 'wb'))
