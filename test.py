@@ -2,9 +2,11 @@ import pickle
 import tensorflow
 import numpy as np
 from numpy.linalg import norm
-from tensorflow.keras.preprocessing import image
-from tensorflow.keras.layers import GlobalMaxPooling2D
-from tensorflow.keras.applications.resnet50 import ResNet50,preprocess_input
+from keras.preprocessing import image
+from keras.utils import load_img, img_to_array
+from keras.layers import GlobalMaxPooling2D
+from keras.applications import ResNet50
+from keras.applications.imagenet_utils import preprocess_input
 from sklearn.neighbors import NearestNeighbors
 import cv2
 
@@ -20,8 +22,8 @@ model = tensorflow.keras.Sequential([
 ])
 
 
-img = image.load_img('C:/Programs/FashionRecommender/test/shirt.jpg',target_size=(224,224))
-img_array = image.img_to_array(img)
+img = load_img('C:/Programs/FashionRecommender/test/shirt.jpg',target_size=(224,224))
+img_array = img_to_array(img)
 expanded_img_array = np.expand_dims(img_array, axis=0)
 preprocessed_img = preprocess_input(expanded_img_array)
 result = model.predict(preprocessed_img).flatten()
